@@ -1,23 +1,46 @@
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+if (navigator.mediaDevices === undefined) {
+  navigator.mediaDevices = {};
+  navigator.mediaDevices.getUserMedia = function(constraintObj) {
+      let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+      if (!getUserMedia) {
+          return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+      }
+      return new Promise(function(resolve, reject) {
+          getUserMedia.call(navigator, constraintObj, resolve, reject);
+      });
+  }
+}else{
+  navigator.mediaDevices.enumerateDevices()
+  .then(devices => {
+      devices.forEach(device=>{
+          console.log(device.kind.toUpperCase(), device.label);
+          //, device.deviceId
+      })
+  })
+  .catch(err=>{
+      console.log(err.name, err.message);
+  })
+}
+navigator.mediaDevices.getUserMedia({video: true})
+.then(function(mediaStreamObj) {
+  //connect the media stream to the first video element
+  let video = document.querySelector('video');
+  if ("srcObject" in video) {
+      video.srcObject = mediaStreamObj;
+  } else {
+      //old version
+      video.src = window.URL.createObjectURL(mediaStreamObj);
+  }
 
-if (navigator.getUserMedia) {
-  navigator.getUserMedia({video: true}, (stream) => {
-    const video = document.querySelector("video");
-    if ("srcObject" in video) {
-      video.srcObject = stream;
-    } else {
-      video.src = window.URL.createObjectURL(stream);
-    }
-    video.onloadeddata = () => {
+  video.onloadedmetadata = function(ev) {
+      //show in the video element what is being captured by the webcam
       video.play();
       startDetection();
-    }
-  }, (e) => {
-    console.error(e);
-  });
-} else {
-  console.error("Your browser does not support webcam access.")
-}
+  };
+})
+.catch(function(err) { 
+  console.log(err.name, err.message); 
+});
 
 async function startDetection() {
   const video = document.querySelector("video");
