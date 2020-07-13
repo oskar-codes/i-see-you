@@ -9,7 +9,7 @@ if (navigator.mediaDevices === undefined) {
           getUserMedia.call(navigator, constraintObj, resolve, reject);
       });
   }
-}else{
+} else {
   navigator.mediaDevices.enumerateDevices()
   .then(devices => {
       devices.forEach(device=>{
@@ -17,8 +17,8 @@ if (navigator.mediaDevices === undefined) {
           //, device.deviceId
       })
   })
-  .catch(err=>{
-      console.log(err.name, err.message);
+  .catch( e=> {
+      console.error(e.name, e.message);
   })
 }
 navigator.mediaDevices.getUserMedia({video: true})
@@ -49,6 +49,8 @@ async function startDetection() {
   const eyesDiv = document.querySelector("#eyes");
 
   await faceapi.nets.ssdMobilenetv1.loadFromUri('./model');
+  
+  document.querySelector("h1").style.opacity = 0;
 
   console.log("started");
   
