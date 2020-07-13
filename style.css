@@ -54,3 +54,12 @@ video {
   transform: translate(-50%, -50%);
   /*transition: all 0.3s;*/
 }
+
+h1 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  color: white;
+  font-family: sans-serif;
+}
