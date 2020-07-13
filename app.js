@@ -47,10 +47,11 @@ async function startDetection() {
   const boxEl = document.querySelector("#box");
   const eyes = document.querySelectorAll(".eye");
   const eyesDiv = document.querySelector("#eyes");
+  const msg = document.querySelector("h1");
 
   await faceapi.nets.ssdMobilenetv1.loadFromUri('./model');
   
-  document.querySelector("h1").style.opacity = 0;
+  msg.innerHTML = "Looking for you...";
 
   console.log("started");
   
@@ -58,6 +59,7 @@ async function startDetection() {
     const detection = await faceapi.detectSingleFace(video);
 
     if (detection) {
+      msg.style.opacity = 0;
       eyesDiv.style.opacity = 1;
 
       const detBox = detection.box;
